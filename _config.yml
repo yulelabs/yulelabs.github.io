@@ -14,10 +14,14 @@ author: Pereira
 # --- List of links in the navigation bar --- #
 
 navbar-links:
-  Engineers: "Software-Engineers-For-Hire"
-  Software Development: "Custom-Software-Development"
-  eCommerce: "Custom-ECommerce-Store-Development"
-  Social Networks: "Social-Networks-Automation"
+ Software Development & Engineering: "Custom-Software-Development"
+ Training: "Custom-Software-Development"
+ Team: "Custom-Software-Development"
+ Contacts: "Custom-Software-Development"
+#  Engineers: "Software-Engineers-For-Hire"
+#  Software Development: "Custom-Software-Development"
+#  eCommerce: "Custom-ECommerce-Store-Development"
+#  Social Networks: "Social-Networks-Automation"
 
 # --- Logo --- #
 
