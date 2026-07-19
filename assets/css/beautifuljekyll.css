@@ -148,6 +148,23 @@ img {
   font-size: 1.125rem;
 }
 
+.navbar-experimentl-btn {
+  margin-left: 0.75rem;
+  margin-right: 0.5rem;
+  align-self: center;
+  white-space: nowrap;
+  background-color: {{ site.hover-col | default: "#0085A1" }};
+  border-color: {{ site.hover-col | default: "#0085A1" }};
+  color: #fff;
+}
+
+.navbar-experimentl-btn:hover,
+.navbar-experimentl-btn:focus {
+  background-color: {{ site.link-col | default: "#008AFF" }};
+  border-color: {{ site.link-col | default: "#008AFF" }};
+  color: #fff;
+}
+
 .navbar-custom .navbar-brand-logo {
   -webkit-transition: padding .5s ease-in-out;
   -moz-transition: padding .5s ease-in-out;
