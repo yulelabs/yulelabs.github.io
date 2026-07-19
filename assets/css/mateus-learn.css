@@ -73,6 +73,121 @@ body {
   margin-bottom: 1.25rem;
 }
 
+.ml-section-title {
+  font-family: var(--ml-font-display);
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  margin: 0.25rem 0 0.35rem;
+}
+
+.ml-section-sub {
+  margin: 0 0 1rem;
+  font-weight: 700;
+  opacity: 0.78;
+}
+
+.ml-hello-banner {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 1.1rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--ml-radius);
+  background: linear-gradient(120deg, #fff7d6, #e8fff1 55%, #dff3ff);
+}
+
+.ml-hello-line {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--ml-font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+}
+
+.ml-hello-flag {
+  font-size: 1.35rem;
+}
+
+.ml-lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.ml-lang-card {
+  border: 0;
+  text-align: center;
+  background: linear-gradient(180deg, #fff 0%, #f3fff7 100%);
+  border-radius: var(--ml-radius);
+  padding: 1.2rem 1rem 1.3rem;
+  box-shadow: 0 8px 0 rgba(31, 122, 76, 0.18);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-height: 9rem;
+}
+
+.ml-lang-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 0 rgba(31, 122, 76, 0.18);
+}
+
+.ml-lang-card:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 0 rgba(31, 122, 76, 0.18);
+}
+
+.ml-lang-card-flag {
+  display: block;
+  font-size: 2.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.ml-lang-card-name {
+  display: block;
+  font-family: var(--ml-font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.ml-lang-card-hello {
+  display: block;
+  margin-top: 0.35rem;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.ml-lang-pill {
+  font-family: var(--ml-font-display);
+  font-weight: 700;
+  background: #e8f7ee;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+}
+
+.ml-scoreboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.ml-score-chip {
+  font-family: var(--ml-font-display);
+  font-weight: 700;
+  background: #fff3cd;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+.ml-score-chip.ml-score-main {
+  background: #d8f8e3;
+  font-size: 1.05rem;
+}
+
+.ml-score-chip strong {
+  font-size: 1.1em;
+}
+
 .ml-brand {
   display: flex;
   flex-direction: column;

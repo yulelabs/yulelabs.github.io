@@ -2,7 +2,7 @@
   "use strict";
 
   var CHILD_NAME = "Mateus Miguel";
-  var STORAGE_KEY = "mateus-learn-v1";
+  var STORAGE_KEY = "mateus-learn-v2";
 
   var ITEMS = [
     { id: "dog", emoji: "🐶", category: "animal", en: "dog", pt: "cão", pl: "pies", letter: { en: "D", pt: "C", pl: "P" } },
@@ -61,19 +61,21 @@
       kicker: "Experimental zen",
       title: CHILD_NAME + "'s Learning Garden",
       subtitle: "Letters, numbers, animals, fruits & veggies — let's play!",
-      stars: "Stars",
+      hello: "Hello Mateus",
+      chooseLang: "Choose a language to start",
       soundOn: "Sound on",
       soundOff: "Sound off",
-      pickLang: "Language",
       modesTitle: "Choose a game",
-      back: "← Games",
+      backGames: "← Games",
+      backLang: "← Languages",
       hear: "🔊 Hear it",
-      again: "Next →",
       great: ["Yes!", "Awesome!", "You did it!", "Super star!", "Fantastic, Mateus!"],
       tryAgain: ["Almost!", "Try again!", "You can do it!", "Have another go!"],
       streak: "Streak",
       round: "Round",
-      tip: "Tip: tap the speaker to hear the word again.",
+      score: "Score",
+      tip: "Tip: tap Hear it to listen again.",
+      langLabel: "Inglish",
       modes: {
         letters: { title: "Letters", desc: "Hear a letter and find it." },
         numbers: { title: "Numbers", desc: "Learn numbers 1 to 10." },
@@ -94,19 +96,21 @@
       kicker: "Experimental zen",
       title: "Jardim do " + CHILD_NAME,
       subtitle: "Letras, números, animais, frutas e legumes — vamos brincar!",
-      stars: "Estrelas",
+      hello: "Olá Mateus",
+      chooseLang: "Escolhe uma língua para começar",
       soundOn: "Som ligado",
       soundOff: "Som desligado",
-      pickLang: "Idioma",
       modesTitle: "Escolhe um jogo",
-      back: "← Jogos",
+      backGames: "← Jogos",
+      backLang: "← Línguas",
       hear: "🔊 Ouvir",
-      again: "Seguinte →",
       great: ["Sim!", "Muito bem!", "Conseguiste!", "Super estrela!", "Fantástico, Mateus!"],
       tryAgain: ["Quase!", "Tenta outra vez!", "Tu consegues!", "Mais uma vez!"],
       streak: "Seguidas",
       round: "Ronda",
-      tip: "Dica: toca no altifalante para ouvir outra vez.",
+      score: "Pontos",
+      tip: "Dica: toca em Ouvir para escutar outra vez.",
+      langLabel: "Portugues",
       modes: {
         letters: { title: "Letras", desc: "Ouve uma letra e encontra-a." },
         numbers: { title: "Números", desc: "Aprende os números de 1 a 10." },
@@ -127,19 +131,21 @@
       kicker: "Experimental zen",
       title: "Ogród " + CHILD_NAME,
       subtitle: "Litery, liczby, zwierzęta, owoce i warzywa — bawmy się!",
-      stars: "Gwiazdki",
+      hello: "Cześć Mateus",
+      chooseLang: "Wybierz język, żeby zacząć",
       soundOn: "Dźwięk włączony",
       soundOff: "Dźwięk wyłączony",
-      pickLang: "Język",
       modesTitle: "Wybierz grę",
-      back: "← Gry",
+      backGames: "← Gry",
+      backLang: "← Języki",
       hear: "🔊 Posłuchaj",
-      again: "Dalej →",
       great: ["Tak!", "Świetnie!", "Udało się!", "Super gwiazda!", "Fantastycznie, Mateus!"],
       tryAgain: ["Prawie!", "Spróbuj jeszcze raz!", "Dasz radę!", "Jeszcze raz!"],
       streak: "Seria",
       round: "Runda",
-      tip: "Wskazówka: stuknij głośnik, żeby usłyszeć jeszcze raz.",
+      score: "Wynik",
+      tip: "Wskazówka: stuknij Posłuchaj, żeby usłyszeć jeszcze raz.",
+      langLabel: "Polski",
       modes: {
         letters: { title: "Litery", desc: "Usłysz literę i ją znajdź." },
         numbers: { title: "Liczby", desc: "Ucz się liczb od 1 do 10." },
@@ -159,52 +165,33 @@
   };
 
   var LANG_META = {
-    en: { label: "English", flag: "🇬🇧", speech: "en-US" },
-    pt: { label: "Português", flag: "🇵🇹", speech: "pt-BR" },
-    pl: { label: "Polski", flag: "🇵🇱", speech: "pl-PL" }
+    pt: { label: "Portugues", flag: "🇵🇹", speech: "pt-BR", tts: "pt" },
+    en: { label: "Inglish", flag: "🇬🇧", speech: "en-US", tts: "en" },
+    pl: { label: "Polski", flag: "🇵🇱", speech: "pl-PL", tts: "pl" }
   };
 
+  var LANG_ORDER = ["pt", "en", "pl"];
+
   var state = {
-    lang: "pt",
+    lang: null,
     sound: true,
-    stars: 0,
-    streak: 0,
-    bestStreak: 0,
-    screen: "home",
+    screen: "lang",
     mode: null,
     round: 0,
+    score: 0,
+    streak: 0,
     locked: false,
     question: null
   };
 
   var root;
   var audioCtx;
-
-  function load() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      var data = JSON.parse(raw);
-      if (data.lang && I18N[data.lang]) state.lang = data.lang;
-      if (typeof data.sound === "boolean") state.sound = data.sound;
-      if (typeof data.stars === "number") state.stars = data.stars;
-      if (typeof data.bestStreak === "number") state.bestStreak = data.bestStreak;
-    } catch (e) { /* ignore */ }
-  }
-
-  function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        lang: state.lang,
-        sound: state.sound,
-        stars: state.stars,
-        bestStreak: state.bestStreak
-      }));
-    } catch (e) { /* ignore */ }
-  }
+  var voiceAudio = null;
+  var voicesReady = false;
+  var unlockAudioEl = null;
 
   function t() {
-    return I18N[state.lang];
+    return I18N[state.lang || "en"];
   }
 
   function wordOf(item) {
@@ -226,12 +213,49 @@
     return shuffle(arr).slice(0, n);
   }
 
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (typeof data.sound === "boolean") state.sound = data.sound;
+    } catch (e) { /* ignore */ }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ sound: state.sound }));
+    } catch (e) { /* ignore */ }
+  }
+
   function ensureAudio() {
     if (!audioCtx) {
       var Ctx = window.AudioContext || window.webkitAudioContext;
       if (Ctx) audioCtx = new Ctx();
     }
-    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  }
+
+  function unlockSpeech() {
+    ensureAudio();
+    // Unlock HTMLAudio playback for later spoken words (after timers).
+    if (!unlockAudioEl) {
+      unlockAudioEl = new Audio(
+        "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="
+      );
+      unlockAudioEl.play().catch(function () { /* ignore */ });
+    }
+    if (!window.speechSynthesis) return;
+    try {
+      window.speechSynthesis.cancel();
+      var warm = new SpeechSynthesisUtterance(" ");
+      warm.volume = 0;
+      warm.rate = 1;
+      window.speechSynthesis.speak(warm);
+      window.speechSynthesis.cancel();
+    } catch (e) { /* ignore */ }
   }
 
   function tone(freq, start, dur, type, gainValue) {
@@ -241,7 +265,7 @@
     osc.type = type || "sine";
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(gainValue || 0.12, start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(gainValue || 0.1, start + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
@@ -251,51 +275,142 @@
 
   function playClick() {
     ensureAudio();
-    if (!audioCtx) return;
-    var now = audioCtx.currentTime;
-    tone(520, now, 0.08, "triangle", 0.08);
+    if (!audioCtx || !state.sound) return;
+    tone(640, audioCtx.currentTime, 0.05, "triangle", 0.05);
   }
 
   function playSuccess() {
     ensureAudio();
-    if (!audioCtx) return;
+    if (!audioCtx || !state.sound) return;
     var now = audioCtx.currentTime;
-    tone(523.25, now, 0.12, "sine", 0.14);
-    tone(659.25, now + 0.1, 0.12, "sine", 0.14);
-    tone(783.99, now + 0.2, 0.18, "sine", 0.16);
+    tone(523.25, now, 0.1, "sine", 0.1);
+    tone(659.25, now + 0.09, 0.1, "sine", 0.1);
+    tone(783.99, now + 0.18, 0.16, "sine", 0.12);
   }
 
   function playWrong() {
     ensureAudio();
-    if (!audioCtx) return;
+    if (!audioCtx || !state.sound) return;
     var now = audioCtx.currentTime;
-    tone(220, now, 0.16, "triangle", 0.08);
-    tone(180, now + 0.08, 0.18, "triangle", 0.07);
+    tone(196, now, 0.14, "triangle", 0.06);
   }
 
   function playFanfare() {
     ensureAudio();
-    if (!audioCtx) return;
+    if (!audioCtx || !state.sound) return;
     var now = audioCtx.currentTime;
     [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
-      tone(f, now + i * 0.09, 0.2, "sine", 0.13);
+      tone(f, now + i * 0.08, 0.18, "sine", 0.1);
+    });
+  }
+
+  function stopVoice() {
+    if (voiceAudio) {
+      try {
+        voiceAudio.pause();
+        voiceAudio.src = "";
+      } catch (e) { /* ignore */ }
+      voiceAudio = null;
+    }
+    if (window.speechSynthesis) {
+      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    }
+  }
+
+  function pickVoice(langCode) {
+    if (!window.speechSynthesis) return null;
+    var voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    var wanted = LANG_META[langCode].speech.toLowerCase();
+    var prefix = langCode === "en" ? "en" : langCode;
+    var exact = voices.find(function (v) { return (v.lang || "").toLowerCase() === wanted; });
+    if (exact) return exact;
+    var starts = voices.find(function (v) {
+      return (v.lang || "").toLowerCase().indexOf(prefix) === 0;
+    });
+    if (starts) return starts;
+    return voices.find(function (v) {
+      return (v.lang || "").toLowerCase().indexOf(prefix) !== -1;
+    }) || null;
+  }
+
+  function speakWithSynthesis(text, langCode, opts) {
+    return new Promise(function (resolve) {
+      if (!window.speechSynthesis) {
+        resolve(false);
+        return;
+      }
+      try {
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = LANG_META[langCode].speech;
+        u.rate = (opts && opts.rate) || 0.88;
+        u.pitch = 1.05;
+        u.volume = 1;
+        var voice = pickVoice(langCode);
+        if (voice) u.voice = voice;
+        var done = false;
+        var finish = function (ok) {
+          if (done) return;
+          done = true;
+          resolve(ok);
+        };
+        u.onend = function () { finish(true); };
+        u.onerror = function () { finish(false); };
+        window.speechSynthesis.speak(u);
+        // Chrome sometimes never fires onend for short phrases.
+        setTimeout(function () { finish(true); }, Math.max(1800, text.length * 180));
+      } catch (e) {
+        resolve(false);
+      }
+    });
+  }
+
+  function speakWithAudioTts(text, langCode) {
+    return new Promise(function (resolve) {
+      try {
+        var tl = LANG_META[langCode].tts;
+        var url = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" +
+          encodeURIComponent(tl) + "&q=" + encodeURIComponent(text);
+        stopVoice();
+        var audio = new Audio();
+        voiceAudio = audio;
+        audio.preload = "auto";
+        var settled = false;
+        var timer = null;
+        var finish = function (ok) {
+          if (settled) return;
+          settled = true;
+          if (timer) clearTimeout(timer);
+          if (voiceAudio === audio) voiceAudio = null;
+          resolve(ok);
+        };
+        audio.onended = function () { finish(true); };
+        audio.onerror = function () { finish(false); };
+        audio.src = url;
+        var playPromise = audio.play();
+        if (playPromise && playPromise.then) {
+          playPromise.then(function () { /* playing */ }).catch(function () { finish(false); });
+        }
+        timer = setTimeout(function () { finish(false); }, 6000);
+      } catch (e) {
+        resolve(false);
+      }
     });
   }
 
   function speak(text, opts) {
-    if (!state.sound || !window.speechSynthesis) return;
+    if (!state.sound || !text) return Promise.resolve();
     opts = opts || {};
-    window.speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
-    u.lang = LANG_META[state.lang].speech;
-    u.rate = opts.rate || 0.9;
-    u.pitch = opts.pitch || 1.05;
-    var voices = window.speechSynthesis.getVoices();
-    var preferred = voices.find(function (v) {
-      return v.lang && v.lang.toLowerCase().indexOf(state.lang === "en" ? "en" : state.lang) === 0;
+    var langCode = opts.lang || state.lang || "en";
+    ensureAudio();
+    unlockSpeech();
+
+    // Prefer online TTS so Portuguese / Polish / English words are clearly spoken.
+    // Fall back to the browser voice if the audio request is blocked.
+    return speakWithAudioTts(text, langCode).then(function (audioOk) {
+      if (audioOk) return true;
+      return speakWithSynthesis(text, langCode, opts);
     });
-    if (preferred) u.voice = preferred;
-    window.speechSynthesis.speak(u);
   }
 
   function celebrate() {
@@ -356,10 +471,10 @@
     var choices = shuffle([num].concat(distractors));
     return {
       kind: "numbers",
-      speakText: String(num.n) + ". " + num[state.lang],
+      speakText: num[state.lang],
       answer: String(num.n),
       choices: choices.map(function (c) {
-        return { id: String(c.n), label: String(c.n), emoji: false };
+        return { id: String(c.n), label: String(c.n) + " · " + c[state.lang], emoji: false };
       }),
       hero: { type: "number", value: String(num.n) },
       hint: num[state.lang]
@@ -377,7 +492,7 @@
         return { id: c.id, label: c.emoji, emoji: true };
       }),
       hero: { type: "none" },
-      hint: wordOf(answerItem)
+      hint: t().categories[answerItem.category]
     };
   }
 
@@ -427,9 +542,20 @@
     };
     state.question = builders[state.mode]();
     render();
+    // Speak after paint; keep soft cue then real word.
     setTimeout(function () {
-      if (state.question) speak(state.question.speakText);
-    }, 280);
+      if (!state.question) return;
+      speak(state.question.speakText);
+    }, 350);
+  }
+
+  function updateScoreUi() {
+    var el = root && root.querySelector("[data-score]");
+    if (el) el.textContent = String(state.score);
+    var streakEl = root && root.querySelector("[data-streak]");
+    if (streakEl) streakEl.textContent = String(state.streak);
+    var roundEl = root && root.querySelector("[data-round]");
+    if (roundEl) roundEl.textContent = String(state.round);
   }
 
   function onChoice(choiceId) {
@@ -446,23 +572,23 @@
 
     if (correct) {
       state.locked = true;
-      state.stars += 1;
+      state.score += 1;
       state.streak += 1;
-      if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-      save();
+      updateScoreUi();
       playSuccess();
       if (feedback) {
         feedback.className = "ml-feedback good";
-        feedback.textContent = randomPraise() + " ⭐";
+        feedback.textContent = randomPraise() + " (+1)";
       }
       speak(state.question.speakText);
       if (state.streak > 0 && state.streak % 5 === 0) {
         playFanfare();
         celebrate();
       }
-      setTimeout(nextQuestion, 1100);
+      setTimeout(nextQuestion, 1200);
     } else {
       state.streak = 0;
+      updateScoreUi();
       playWrong();
       if (feedback) {
         feedback.className = "ml-feedback bad";
@@ -477,41 +603,62 @@
   }
 
   function startMode(mode) {
+    unlockSpeech();
     playClick();
     state.mode = mode;
     state.screen = "game";
     state.round = 0;
+    state.score = 0;
     state.streak = 0;
     nextQuestion();
   }
 
-  function goHome() {
+  function goGames() {
     playClick();
-    state.screen = "home";
+    stopVoice();
+    state.screen = "games";
     state.mode = null;
     state.question = null;
     state.locked = false;
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
     render();
   }
 
-  function setLang(lang) {
+  function goLang() {
+    playClick();
+    stopVoice();
+    state.screen = "lang";
+    state.lang = null;
+    state.mode = null;
+    state.question = null;
+    state.locked = false;
+    state.score = 0;
+    state.round = 0;
+    state.streak = 0;
+    render();
+  }
+
+  function chooseLang(lang) {
     if (!I18N[lang]) return;
+    unlockSpeech();
     playClick();
     state.lang = lang;
-    save();
+    state.screen = "games";
+    state.score = 0;
+    state.round = 0;
+    state.streak = 0;
     render();
-    speak(t().title.split(" ")[0] + " " + CHILD_NAME, { rate: 1 });
+    speak(I18N[lang].hello, { lang: lang });
   }
 
   function toggleSound() {
     state.sound = !state.sound;
     save();
     if (state.sound) {
-      ensureAudio();
+      unlockSpeech();
       playClick();
-    } else if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
+      if (state.lang) speak(t().hello);
+    } else {
+      stopVoice();
     }
     render();
   }
@@ -551,7 +698,34 @@
     return "";
   }
 
-  function renderHome() {
+  function renderLangSelect() {
+    var hellos = LANG_ORDER.map(function (code) {
+      return '<div class="ml-hello-line"><span class="ml-hello-flag">' + LANG_META[code].flag +
+        '</span> <span class="ml-hello-text">' + I18N[code].hello + "</span></div>";
+    }).join("");
+
+    var cards = LANG_ORDER.map(function (code) {
+      var meta = LANG_META[code];
+      return (
+        '<button type="button" class="ml-lang-card" data-choose-lang="' + code + '">' +
+          '<span class="ml-lang-card-flag" aria-hidden="true">' + meta.flag + "</span>" +
+          '<span class="ml-lang-card-name">' + meta.label + "</span>" +
+          '<span class="ml-lang-card-hello">' + I18N[code].hello + "</span>" +
+        "</button>"
+      );
+    }).join("");
+
+    return (
+      '<div class="ml-panel ml-lang-panel">' +
+        '<div class="ml-hello-banner">' + hellos + "</div>" +
+        '<h2 class="ml-section-title">Portugues · Inglish · Polski</h2>' +
+        '<p class="ml-section-sub">Choose a language / Escolhe uma língua / Wybierz język</p>' +
+        '<div class="ml-lang-grid">' + cards + "</div>" +
+      "</div>"
+    );
+  }
+
+  function renderGames() {
     var i18n = t();
     var modeKeys = ["letters", "numbers", "find", "match", "count"];
     var cards = modeKeys.map(function (key) {
@@ -568,7 +742,11 @@
 
     return (
       '<div class="ml-panel">' +
-        "<h2 style=\"font-family:var(--ml-font-display);margin:0 0 0.75rem;\">" + i18n.modesTitle + "</h2>" +
+        '<div class="ml-game-head">' +
+          '<button type="button" class="ml-back" data-action="lang">' + i18n.backLang + "</button>" +
+          '<div class="ml-lang-pill">' + LANG_META[state.lang].flag + " " + LANG_META[state.lang].label + "</div>" +
+        "</div>" +
+        '<h2 class="ml-section-title">' + i18n.modesTitle + "</h2>" +
         '<div class="ml-modes">' + cards + "</div>" +
         '<p class="ml-tip">' + i18n.tip + "</p>" +
       "</div>"
@@ -589,9 +767,11 @@
     return (
       '<div class="ml-panel">' +
         '<div class="ml-game-head">' +
-          '<button type="button" class="ml-back" data-action="home">' + i18n.back + "</button>" +
-          '<div class="ml-progress">' + i18n.round + " " + state.round +
-            " · " + i18n.streak + " " + state.streak +
+          '<button type="button" class="ml-back" data-action="games">' + i18n.backGames + "</button>" +
+          '<div class="ml-scoreboard">' +
+            '<span class="ml-score-chip ml-score-main">' + i18n.score + ': <strong data-score>' + state.score + "</strong></span>" +
+            '<span class="ml-score-chip">' + i18n.round + ': <strong data-round>' + state.round + "</strong></span>" +
+            '<span class="ml-score-chip">' + i18n.streak + ': <strong data-streak>' + state.streak + "</strong></span>" +
           "</div>" +
         "</div>" +
         '<div class="ml-prompt">' +
@@ -607,15 +787,22 @@
 
   function render() {
     if (!root) return;
-    var i18n = t();
-    var langButtons = Object.keys(LANG_META).map(function (code) {
-      var meta = LANG_META[code];
-      return (
-        '<button type="button" class="' + (state.lang === code ? "active" : "") + '" data-lang="' + code + '" aria-pressed="' + (state.lang === code) + '">' +
-          meta.flag + " " + meta.label +
-        "</button>"
-      );
-    }).join("");
+    var title = "Experimental zen";
+    var subtitle = "Portugues · Inglish · Polski";
+    var showSound = true;
+
+    if (state.screen === "lang") {
+      title = "Experimental zen";
+      subtitle = "Hello Mateus · Olá Mateus · Cześć Mateus";
+    } else if (state.lang) {
+      title = t().title;
+      subtitle = t().subtitle;
+    }
+
+    var body = "";
+    if (state.screen === "lang") body = renderLangSelect();
+    else if (state.screen === "games") body = renderGames();
+    else body = renderGame();
 
     root.innerHTML =
       '<div class="ml-floaters" aria-hidden="true">' +
@@ -625,36 +812,40 @@
       '<div class="ml-shell">' +
         '<div class="ml-topbar">' +
           '<div class="ml-brand">' +
-            '<div class="ml-kicker">' + i18n.kicker + "</div>" +
-            '<h1 class="ml-title">' + i18n.title + "</h1>" +
-            '<p class="ml-subtitle">' + i18n.subtitle + "</p>" +
+            '<div class="ml-kicker">Experimental zen</div>' +
+            '<h1 class="ml-title">' + title + "</h1>" +
+            '<p class="ml-subtitle">' + subtitle + "</p>" +
           "</div>" +
           '<div class="ml-controls">' +
-            '<div class="ml-lang" role="group" aria-label="' + i18n.pickLang + '">' + langButtons + "</div>" +
-            '<button type="button" class="ml-icon-btn" data-action="sound" title="' + (state.sound ? i18n.soundOn : i18n.soundOff) + '">' +
-              (state.sound ? "🔊" : "🔇") +
-            "</button>" +
-            '<div class="ml-stars" title="' + i18n.stars + '">⭐ ' + state.stars + "</div>" +
+            (showSound
+              ? '<button type="button" class="ml-icon-btn" data-action="sound" title="Sound">' +
+                  (state.sound ? "🔊" : "🔇") +
+                "</button>"
+              : "") +
           "</div>" +
         "</div>" +
-        (state.screen === "home" ? renderHome() : renderGame()) +
+        body +
       "</div>";
   }
 
   function onClick(e) {
-    var target = e.target.closest("[data-lang], [data-mode], [data-action], .ml-choice");
+    var target = e.target.closest("[data-choose-lang], [data-mode], [data-action], .ml-choice");
     if (!target) return;
 
-    if (target.hasAttribute("data-lang")) {
-      setLang(target.getAttribute("data-lang"));
+    if (target.hasAttribute("data-choose-lang")) {
+      chooseLang(target.getAttribute("data-choose-lang"));
       return;
     }
     if (target.hasAttribute("data-mode")) {
       startMode(target.getAttribute("data-mode"));
       return;
     }
-    if (target.getAttribute("data-action") === "home") {
-      goHome();
+    if (target.getAttribute("data-action") === "games") {
+      goGames();
+      return;
+    }
+    if (target.getAttribute("data-action") === "lang") {
+      goLang();
       return;
     }
     if (target.getAttribute("data-action") === "sound") {
@@ -675,11 +866,17 @@
     root = document.getElementById("mateus-app");
     if (!root) return;
     load();
+    state.screen = "lang";
+    state.lang = null;
     render();
     root.addEventListener("click", onClick);
+
     if (window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = function () { /* warm voices */ };
-      window.speechSynthesis.getVoices();
+      var markVoices = function () {
+        voicesReady = (window.speechSynthesis.getVoices() || []).length > 0;
+      };
+      window.speechSynthesis.onvoiceschanged = markVoices;
+      markVoices();
     }
   }
 
