@@ -60,7 +60,6 @@
     en: {
       kicker: "Experimental zen",
       title: CHILD_NAME + "'s Learning Garden",
-      subtitle: "Letters, numbers, animals, fruits & veggies — let's play!",
       hello: "Hello Mateus",
       chooseLang: "Choose a language to start",
       soundOn: "Sound on",
@@ -95,7 +94,6 @@
     pt: {
       kicker: "Experimental zen",
       title: "Jardim do " + CHILD_NAME,
-      subtitle: "Letras, números, animais, frutas e legumes — vamos brincar!",
       hello: "Olá Mateus",
       chooseLang: "Escolhe uma língua para começar",
       soundOn: "Som ligado",
@@ -130,7 +128,6 @@
     pl: {
       kicker: "Experimental zen",
       title: "Ogród " + CHILD_NAME,
-      subtitle: "Litery, liczby, zwierzęta, owoce i warzywa — bawmy się!",
       hello: "Cześć Mateus",
       chooseLang: "Wybierz język, żeby zacząć",
       soundOn: "Dźwięk włączony",
@@ -172,6 +169,12 @@
 
   var LANG_ORDER = ["pt", "en", "pl"];
 
+  var FUN_WORDS = {
+    en: ["lions", "apples", "carrots", "dogs", "bananas", "frogs", "horses", "strawberries", "letters", "numbers", "cats", "oranges", "birds", "grapes", "tomatoes", "monkeys", "pears", "sheep"],
+    pt: ["leões", "maçãs", "cenouras", "cães", "bananas", "sapos", "cavalos", "morangos", "letras", "números", "gatos", "laranjas", "pássaros", "uvas", "tomates", "macacos", "pêras", "ovelhas"],
+    pl: ["lwy", "jabłka", "marchewki", "psy", "banany", "żaby", "konie", "truskawki", "litery", "liczby", "koty", "pomarańcze", "ptaki", "winogrona", "pomidory", "małpy", "gruszki", "owce"]
+  };
+
   var state = {
     lang: null,
     sound: true,
@@ -181,7 +184,8 @@
     score: 0,
     streak: 0,
     locked: false,
-    question: null
+    question: null,
+    tagline: ""
   };
 
   var root;
@@ -196,6 +200,53 @@
 
   function wordOf(item) {
     return item[state.lang];
+  }
+
+  function pickOne(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function pickTwoWords(lang) {
+    var pool = shuffle(FUN_WORDS[lang] || FUN_WORDS.en);
+    return [pool[0], pool[1]];
+  }
+
+  function buildMateusTagline(lang) {
+    var words = pickTwoWords(lang || "en");
+    var a = words[0];
+    var b = words[1];
+    var templates = {
+      en: [
+        "Mateus, let's play with " + a + " and " + b + "!",
+        "Come on Mateus — " + a + ", " + b + " and fun await!",
+        "Mateus can learn letters, numbers, " + a + " and " + b + "!",
+        "Yay Mateus! Today we explore " + a + " and " + b + "!",
+        "Mateus, find " + a + ", count " + b + ", and smile big!",
+        "Let's go Mateus — animals, fruits, " + a + " and " + b + "!"
+      ],
+      pt: [
+        "Mateus, vamos brincar com " + a + " e " + b + "!",
+        "Vamos Mateus — " + a + ", " + b + " e muita diversão!",
+        "Mateus pode aprender letras, números, " + a + " e " + b + "!",
+        "Boa Mateus! Hoje exploramos " + a + " e " + b + "!",
+        "Mateus, encontra " + a + ", conta " + b + " e sorri!",
+        "Vamos lá Mateus — animais, frutas, " + a + " e " + b + "!"
+      ],
+      pl: [
+        "Mateus, bawmy się z " + a + " i " + b + "!",
+        "Dawaj Mateus — " + a + ", " + b + " i dużo zabawy!",
+        "Mateus może uczyć się liter, liczb, " + a + " i " + b + "!",
+        "Super Mateus! Dziś odkrywamy " + a + " i " + b + "!",
+        "Mateus, znajdź " + a + ", policz " + b + " i się uśmiechnij!",
+        "Start Mateus — zwierzęta, owoce, " + a + " i " + b + "!"
+      ]
+    };
+    return pickOne(templates[lang] || templates.en);
+  }
+
+  function refreshTagline(lang) {
+    state.tagline = buildMateusTagline(lang || state.lang || "en");
+    return state.tagline;
   }
 
   function shuffle(arr) {
@@ -610,6 +661,7 @@
     state.round = 0;
     state.score = 0;
     state.streak = 0;
+    refreshTagline(state.lang);
     nextQuestion();
   }
 
@@ -620,6 +672,7 @@
     state.mode = null;
     state.question = null;
     state.locked = false;
+    refreshTagline(state.lang);
     render();
   }
 
@@ -634,6 +687,7 @@
     state.score = 0;
     state.round = 0;
     state.streak = 0;
+    state.tagline = "";
     render();
   }
 
@@ -646,6 +700,7 @@
     state.score = 0;
     state.round = 0;
     state.streak = 0;
+    refreshTagline(lang);
     render();
     speak(I18N[lang].hello, { lang: lang });
   }
@@ -699,11 +754,6 @@
   }
 
   function renderLangSelect() {
-    var hellos = LANG_ORDER.map(function (code) {
-      return '<div class="ml-hello-line"><span class="ml-hello-flag">' + LANG_META[code].flag +
-        '</span> <span class="ml-hello-text">' + I18N[code].hello + "</span></div>";
-    }).join("");
-
     var cards = LANG_ORDER.map(function (code) {
       var meta = LANG_META[code];
       return (
@@ -717,7 +767,6 @@
 
     return (
       '<div class="ml-panel ml-lang-panel">' +
-        '<div class="ml-hello-banner">' + hellos + "</div>" +
         '<h2 class="ml-section-title">Portugues · Inglish · Polski</h2>' +
         '<p class="ml-section-sub">Choose a language / Escolhe uma língua / Wybierz język</p>' +
         '<div class="ml-lang-grid">' + cards + "</div>" +
@@ -788,15 +837,15 @@
   function render() {
     if (!root) return;
     var title = "Experimental zen";
-    var subtitle = "Portugues · Inglish · Polski";
-    var showSound = true;
+    var subtitle = "Hello Mateus · Olá Mateus · Cześć Mateus";
 
     if (state.screen === "lang") {
       title = "Experimental zen";
       subtitle = "Hello Mateus · Olá Mateus · Cześć Mateus";
     } else if (state.lang) {
       title = t().title;
-      subtitle = t().subtitle;
+      if (!state.tagline) refreshTagline(state.lang);
+      subtitle = state.tagline;
     }
 
     var body = "";
@@ -810,18 +859,17 @@
         '<span class="ml-floater">🍌</span><span class="ml-floater">🐸</span>' +
       "</div>" +
       '<div class="ml-shell">' +
-        '<div class="ml-topbar">' +
+        '<div class="ml-topbar ml-topbar-centered">' +
+          '<a class="ml-home-link" href="{{ SITE_HOME }}">Yule Labs</a>'.replace("{{ SITE_HOME }}", "/") +
+          '<div class="ml-controls">' +
+            '<button type="button" class="ml-icon-btn" data-action="sound" title="Sound">' +
+              (state.sound ? "🔊" : "🔇") +
+            "</button>" +
+          "</div>" +
           '<div class="ml-brand">' +
             '<div class="ml-kicker">Experimental zen</div>' +
             '<h1 class="ml-title">' + title + "</h1>" +
-            '<p class="ml-subtitle">' + subtitle + "</p>" +
-          "</div>" +
-          '<div class="ml-controls">' +
-            (showSound
-              ? '<button type="button" class="ml-icon-btn" data-action="sound" title="Sound">' +
-                  (state.sound ? "🔊" : "🔇") +
-                "</button>"
-              : "") +
+            '<p class="ml-subtitle ml-subtitle-hero">' + subtitle + "</p>" +
           "</div>" +
         "</div>" +
         body +
