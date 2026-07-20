@@ -162,9 +162,9 @@
   };
 
   var LANG_META = {
-    pt: { label: "Portugues", flag: "🇵🇹", speech: "pt-BR", tts: "pt" },
-    en: { label: "English", flag: "🇬🇧", speech: "en-US", tts: "en" },
-    pl: { label: "Polski", flag: "🇵🇱", speech: "pl-PL", tts: "pl" }
+    pt: { label: "Portugues", flag: "🇵🇹" },
+    en: { label: "English", flag: "🇬🇧" },
+    pl: { label: "Polski", flag: "🇵🇱" }
   };
 
   var LANG_ORDER = ["pt", "en", "pl"];
@@ -191,7 +191,6 @@
   var root;
   var audioCtx;
   var voiceAudio = null;
-  var voicesReady = false;
   var unlockAudioEl = null;
 
   function t() {
@@ -298,15 +297,6 @@
       );
       unlockAudioEl.play().catch(function () { /* ignore */ });
     }
-    if (!window.speechSynthesis) return;
-    try {
-      window.speechSynthesis.cancel();
-      var warm = new SpeechSynthesisUtterance(" ");
-      warm.volume = 0;
-      warm.rate = 1;
-      window.speechSynthesis.speak(warm);
-      window.speechSynthesis.cancel();
-    } catch (e) { /* ignore */ }
   }
 
   function tone(freq, start, dur, type, gainValue) {
@@ -359,109 +349,67 @@
     if (voiceAudio) {
       try {
         voiceAudio.pause();
-        voiceAudio.src = "";
+        voiceAudio.removeAttribute("src");
+        voiceAudio.load();
       } catch (e) { /* ignore */ }
       voiceAudio = null;
     }
-    if (window.speechSynthesis) {
-      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-    }
   }
 
-  function pickVoice(langCode) {
-    if (!window.speechSynthesis) return null;
-    var voices = window.speechSynthesis.getVoices() || [];
-    if (!voices.length) return null;
-    var wanted = LANG_META[langCode].speech.toLowerCase();
-    var prefix = langCode === "en" ? "en" : langCode;
-    var exact = voices.find(function (v) { return (v.lang || "").toLowerCase() === wanted; });
-    if (exact) return exact;
-    var starts = voices.find(function (v) {
-      return (v.lang || "").toLowerCase().indexOf(prefix) === 0;
-    });
-    if (starts) return starts;
-    return voices.find(function (v) {
-      return (v.lang || "").toLowerCase().indexOf(prefix) !== -1;
-    }) || null;
+  function voiceClipUrl(langCode, key) {
+    return "/assets/audio/mateus/" + langCode + "/" + key + ".mp3";
   }
 
-  function speakWithSynthesis(text, langCode, opts) {
+  function letterAudioKey(letter) {
+    return "letter-" + String(letter).toLocaleLowerCase();
+  }
+
+  function playVoiceClip(langCode, key) {
     return new Promise(function (resolve) {
-      if (!window.speechSynthesis) {
+      if (!state.sound || !langCode || !key) {
         resolve(false);
         return;
       }
-      try {
-        var u = new SpeechSynthesisUtterance(text);
-        u.lang = LANG_META[langCode].speech;
-        u.rate = (opts && opts.rate) || 0.88;
-        u.pitch = 1.05;
-        u.volume = 1;
-        var voice = pickVoice(langCode);
-        if (voice) u.voice = voice;
-        var done = false;
-        var finish = function (ok) {
-          if (done) return;
-          done = true;
-          resolve(ok);
-        };
-        u.onend = function () { finish(true); };
-        u.onerror = function () { finish(false); };
-        window.speechSynthesis.speak(u);
-        // Chrome sometimes never fires onend for short phrases.
-        setTimeout(function () { finish(true); }, Math.max(1800, text.length * 180));
-      } catch (e) {
-        resolve(false);
+      ensureAudio();
+      unlockSpeech();
+      stopVoice();
+
+      var audio = new Audio();
+      voiceAudio = audio;
+      audio.preload = "auto";
+      var settled = false;
+      var timer = null;
+      var finish = function (ok) {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
+        if (voiceAudio === audio) voiceAudio = null;
+        resolve(!!ok);
+      };
+
+      audio.onended = function () { finish(true); };
+      audio.onerror = function () { finish(false); };
+      audio.src = voiceClipUrl(langCode, key);
+
+      var playPromise = audio.play();
+      if (playPromise && playPromise.then) {
+        playPromise.then(function () { /* playing natural voice */ }).catch(function () {
+          finish(false);
+        });
       }
+      timer = setTimeout(function () { finish(true); }, 8000);
     });
   }
 
-  function speakWithAudioTts(text, langCode) {
-    return new Promise(function (resolve) {
-      try {
-        var tl = LANG_META[langCode].tts;
-        var url = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" +
-          encodeURIComponent(tl) + "&q=" + encodeURIComponent(text);
-        stopVoice();
-        var audio = new Audio();
-        voiceAudio = audio;
-        audio.preload = "auto";
-        var settled = false;
-        var timer = null;
-        var finish = function (ok) {
-          if (settled) return;
-          settled = true;
-          if (timer) clearTimeout(timer);
-          if (voiceAudio === audio) voiceAudio = null;
-          resolve(ok);
-        };
-        audio.onended = function () { finish(true); };
-        audio.onerror = function () { finish(false); };
-        audio.src = url;
-        var playPromise = audio.play();
-        if (playPromise && playPromise.then) {
-          playPromise.then(function () { /* playing */ }).catch(function () { finish(false); });
-        }
-        timer = setTimeout(function () { finish(false); }, 6000);
-      } catch (e) {
-        resolve(false);
-      }
-    });
-  }
-
-  function speak(text, opts) {
-    if (!state.sound || !text) return Promise.resolve();
+  function speakKey(key, opts) {
     opts = opts || {};
     var langCode = opts.lang || state.lang || "en";
-    ensureAudio();
-    unlockSpeech();
+    return playVoiceClip(langCode, key);
+  }
 
-    // Prefer online TTS so Portuguese / Polish / English words are clearly spoken.
-    // Fall back to the browser voice if the audio request is blocked.
-    return speakWithAudioTts(text, langCode).then(function (audioOk) {
-      if (audioOk) return true;
-      return speakWithSynthesis(text, langCode, opts);
-    });
+  function speakCurrent() {
+    if (!state.question || !state.question.audioKey) return Promise.resolve(false);
+    return speakKey(state.question.audioKey);
   }
 
   function celebrate() {
@@ -509,6 +457,7 @@
     return {
       kind: "letters",
       speakText: letterPrompt(answer),
+      audioKey: letterAudioKey(answer),
       answer: answer,
       choices: choices.map(function (c) { return { id: c, label: c, emoji: false }; }),
       hero: { type: "emoji", value: item.emoji },
@@ -523,6 +472,7 @@
     return {
       kind: "numbers",
       speakText: num[state.lang],
+      audioKey: "number-" + num.n,
       answer: String(num.n),
       choices: choices.map(function (c) {
         return { id: String(c.n), label: String(c.n) + " · " + c[state.lang], emoji: false };
@@ -538,6 +488,7 @@
     return {
       kind: "find",
       speakText: wordOf(answerItem),
+      audioKey: "item-" + answerItem.id,
       answer: answerItem.id,
       choices: options.map(function (c) {
         return { id: c.id, label: c.emoji, emoji: true };
@@ -553,6 +504,7 @@
     return {
       kind: "match",
       speakText: wordOf(answerItem),
+      audioKey: "item-" + answerItem.id,
       answer: answerItem.id,
       choices: options.map(function (c) {
         return { id: c.id, label: wordOf(c), emoji: false };
@@ -572,6 +524,7 @@
     return {
       kind: "count",
       speakText: answerObj[state.lang],
+      audioKey: "number-" + count,
       answer: String(count),
       choices: choices.map(function (c) {
         return { id: String(c.n), label: String(c.n), emoji: false };
@@ -596,7 +549,7 @@
     // Speak after paint; keep soft cue then real word.
     setTimeout(function () {
       if (!state.question) return;
-      speak(state.question.speakText);
+      speakCurrent();
     }, 350);
   }
 
@@ -631,12 +584,14 @@
         feedback.className = "ml-feedback good";
         feedback.textContent = randomPraise() + " (+1)";
       }
-      speak(state.question.speakText);
+      setTimeout(function () { speakCurrent(); }, 220);
       if (state.streak > 0 && state.streak % 5 === 0) {
-        playFanfare();
-        celebrate();
+        setTimeout(function () {
+          playFanfare();
+          celebrate();
+        }, 900);
       }
-      setTimeout(nextQuestion, 1200);
+      setTimeout(nextQuestion, 1400);
     } else {
       state.streak = 0;
       updateScoreUi();
@@ -648,7 +603,7 @@
       setTimeout(function () {
         buttons.forEach(function (btn) { btn.classList.remove("wrong"); });
         if (feedback) feedback.textContent = "";
-        speak(state.question.speakText);
+        speakCurrent();
       }, 700);
     }
   }
@@ -702,7 +657,7 @@
     state.streak = 0;
     refreshTagline(lang);
     render();
-    speak(I18N[lang].hello, { lang: lang });
+    speakKey("hello", { lang: lang });
   }
 
   function toggleSound() {
@@ -710,8 +665,8 @@
     save();
     if (state.sound) {
       unlockSpeech();
-      playClick();
-      if (state.lang) speak(t().hello);
+      if (state.lang) speakKey("hello");
+      else playClick();
     } else {
       stopVoice();
     }
@@ -901,8 +856,8 @@
       return;
     }
     if (target.getAttribute("data-action") === "speak") {
-      playClick();
-      if (state.question) speak(state.question.speakText);
+      unlockSpeech();
+      speakCurrent();
       return;
     }
     if (target.classList.contains("ml-choice")) {
@@ -918,14 +873,6 @@
     state.lang = null;
     render();
     root.addEventListener("click", onClick);
-
-    if (window.speechSynthesis) {
-      var markVoices = function () {
-        voicesReady = (window.speechSynthesis.getVoices() || []).length > 0;
-      };
-      window.speechSynthesis.onvoiceschanged = markVoices;
-      markVoices();
-    }
   }
 
   if (document.readyState === "loading") {
