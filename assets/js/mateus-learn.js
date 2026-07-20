@@ -74,7 +74,7 @@
       round: "Round",
       score: "Score",
       tip: "Tip: tap Hear it to listen again.",
-      langLabel: "Inglish",
+      langLabel: "English",
       modes: {
         letters: { title: "Letters", desc: "Hear a letter and find it." },
         numbers: { title: "Numbers", desc: "Learn numbers 1 to 10." },
@@ -163,7 +163,7 @@
 
   var LANG_META = {
     pt: { label: "Portugues", flag: "🇵🇹", speech: "pt-BR", tts: "pt" },
-    en: { label: "Inglish", flag: "🇬🇧", speech: "en-US", tts: "en" },
+    en: { label: "English", flag: "🇬🇧", speech: "en-US", tts: "en" },
     pl: { label: "Polski", flag: "🇵🇱", speech: "pl-PL", tts: "pl" }
   };
 
@@ -767,7 +767,7 @@
 
     return (
       '<div class="ml-panel ml-lang-panel">' +
-        '<h2 class="ml-section-title">Portugues · Inglish · Polski</h2>' +
+        '<h2 class="ml-section-title">Portugues · English · Polski</h2>' +
         '<p class="ml-section-sub">Choose a language / Escolhe uma língua / Wybierz język</p>' +
         '<div class="ml-lang-grid">' + cards + "</div>" +
       "</div>"
