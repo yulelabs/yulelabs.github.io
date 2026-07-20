@@ -210,60 +210,74 @@ body.ctd-body {
   width: 100%;
   height: 100%;
   display: block;
+  position: absolute;
+  inset: 0;
 }
 
 .ctd-line {
   fill: none;
   stroke: var(--ctd-line);
-  stroke-width: 4;
+  stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
+.ctd-dots-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
 .ctd-dot {
-  cursor: pointer;
-  transition: transform 0.12s ease;
-}
-
-.ctd-dot circle {
-  fill: #fff;
-  stroke: var(--ctd-dot);
-  stroke-width: 3;
-}
-
-.ctd-dot text {
-  fill: var(--ctd-ink);
+  position: absolute;
+  width: 2.55rem;
+  height: 2.55rem;
+  margin-left: -1.275rem;
+  margin-top: -1.275rem;
+  border: 3px solid var(--ctd-dot);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ctd-ink);
   font-family: var(--ctd-font);
   font-weight: 700;
-  font-size: 4.2px;
-  text-anchor: middle;
-  dominant-baseline: central;
-  pointer-events: none;
+  font-size: 1.15rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(29, 53, 87, 0.12);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 2;
 }
 
-.ctd-dot.done circle {
-  fill: #c8f7d4;
-  stroke: var(--ctd-dot);
+.ctd-dot.done {
+  background: #c8f7d4;
+  border-color: var(--ctd-dot);
 }
 
-.ctd-dot.current circle {
-  fill: #ffe0d6;
-  stroke: var(--ctd-next);
-  stroke-width: 4;
+.ctd-dot.current {
+  background: #ffe0d6;
+  border-color: var(--ctd-next);
+  border-width: 4px;
+  transform: scale(1.12);
+  z-index: 3;
+  box-shadow: 0 0 0 4px rgba(231, 111, 81, 0.2);
 }
 
-.ctd-dot.hint circle {
+.ctd-dot.hint {
   animation: ctd-pulse 0.9s ease infinite;
 }
 
-.ctd-dot.wrong circle {
-  fill: #ffd0c6;
+.ctd-dot.wrong {
+  background: #ffd0c6;
   animation: ctd-shake 0.35s ease;
 }
 
 @keyframes ctd-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.18); }
+  0%, 100% { transform: scale(1.12); }
+  50% { transform: scale(1.28); }
 }
 
 @keyframes ctd-shake {
@@ -275,6 +289,7 @@ body.ctd-body {
 .ctd-reveal {
   position: absolute;
   inset: 0;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;

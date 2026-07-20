@@ -188,10 +188,13 @@
     var count = Math.min(puzzle.points.length, letters.length);
     var dots = [];
     for (var i = 0; i < count; i++) {
+      // Keep dots inside the board so labels (including A) are never clipped.
+      var x = Math.min(92, Math.max(8, puzzle.points[i][0]));
+      var y = Math.min(92, Math.max(8, puzzle.points[i][1]));
       dots.push({
         letter: letters[i],
-        x: puzzle.points[i][0],
-        y: puzzle.points[i][1],
+        x: x,
+        y: y,
         index: i
       });
     }
@@ -492,8 +495,9 @@
     var i18n = t();
     var puzzle = currentPuzzle();
     var showHint = state.wrongStreak >= 3 && !state.completed;
-    var connected = Math.max(0, state.nextIndex - 1);
-    var polyline = linePoints(dots, connected);
+    var connectedThrough = state.nextIndex - 1;
+    var polyline = connectedThrough >= 1 ? linePoints(dots, connectedThrough) : "";
+    var nextLetter = (!state.completed && dots[state.nextIndex]) ? dots[state.nextIndex].letter : "";
 
     var dotsHtml = dots.map(function (d) {
       var cls = "ctd-dot";
@@ -501,23 +505,22 @@
       if (d.index === state.nextIndex && !state.completed) cls += " current";
       if (showHint && d.index === state.nextIndex) cls += " hint";
       return (
-        '<g class="' + cls + '" data-index="' + d.index + '" transform="translate(' + d.x + " " + d.y + ')">' +
-          '<circle r="5.2"></circle>' +
-          '<text y="0.5">' + d.letter + "</text>" +
-        "</g>"
+        '<button type="button" class="' + cls + '" data-index="' + d.index + '"' +
+          ' style="left:' + d.x + "%;top:" + d.y + '%"' +
+          ' aria-label="' + d.letter + '">' + d.letter + "</button>"
       );
     }).join("");
 
     return (
       '<div class="ctd-prompt">' + i18n.prompt +
-        (state.completed ? "" : ' <span class="ctd-next-letter">' + (dots[state.nextIndex] ? dots[state.nextIndex].letter : "") + "</span>") +
+        (state.completed ? "" : ' <span class="ctd-next-letter">' + nextLetter + "</span>") +
       "</div>" +
       '<button type="button" class="ctd-hear" data-action="speak">' + i18n.hear + "</button>" +
       '<div class="ctd-board-wrap">' +
-        '<svg class="ctd-board" viewBox="0 0 100 100" role="img" aria-label="' + puzzle.name[state.lang] + '">' +
+        '<svg class="ctd-board" viewBox="0 0 100 100" aria-hidden="true">' +
           (polyline ? '<polyline class="ctd-line" points="' + polyline + '"></polyline>' : "") +
-          dotsHtml +
         "</svg>" +
+        '<div class="ctd-dots-layer">' + dotsHtml + "</div>" +
         '<div class="ctd-reveal' + (state.completed ? " show" : "") + '">' +
           '<div class="ctd-reveal-emoji">' + puzzle.emoji + "</div>" +
           "<h2>" + i18n.doneTitle + "</h2>" +
