@@ -72,7 +72,7 @@ LETTERS = {
 
 HELLO = {
     "en": "Hello Mateus",
-    "pt": "Olá Mateus",
+    "pt": "Olá Mateus, o menino mais bonito do mundo",
     "pl": "Cześć Mateus",
 }
 

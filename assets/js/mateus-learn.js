@@ -94,7 +94,7 @@
     pt: {
       kicker: "Experimental zen",
       title: "Jardim do " + CHILD_NAME,
-      hello: "Olá Mateus",
+      hello: "Olá Mateus, o menino mais bonito do mundo",
       chooseLang: "Escolhe uma língua para começar",
       soundOn: "Som ligado",
       soundOff: "Som desligado",
@@ -792,11 +792,11 @@
   function render() {
     if (!root) return;
     var title = "Experimental zen";
-    var subtitle = "Hello Mateus · Olá Mateus · Cześć Mateus";
+    var subtitle = "Hello Mateus · Olá Mateus, o menino mais bonito do mundo · Cześć Mateus";
 
     if (state.screen === "lang") {
       title = "Experimental zen";
-      subtitle = "Hello Mateus · Olá Mateus · Cześć Mateus";
+      subtitle = "Hello Mateus · Olá Mateus, o menino mais bonito do mundo · Cześć Mateus";
     } else if (state.lang) {
       title = t().title;
       if (!state.tagline) refreshTagline(state.lang);
