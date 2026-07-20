@@ -480,7 +480,6 @@
       playClick();
       state.nextIndex += 1;
       state.wrongStreak = 0;
-      speakLetter(dots[index].letter);
       if (feedback) {
         feedback.className = "ctd-feedback good";
         feedback.textContent = pickOne(t().great);
@@ -502,9 +501,10 @@
           feedback.className = "ctd-feedback good";
           feedback.textContent = pickOne(t().great);
         }
+        // Only announce the next letter — do not repeat the one just tapped.
         setTimeout(function () {
           if (!state.completed) speakLetter(dots[state.nextIndex].letter);
-        }, 700);
+        }, 250);
       }
       return;
     }
