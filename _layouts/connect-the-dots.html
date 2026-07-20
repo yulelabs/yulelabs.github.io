@@ -1,0 +1,18 @@
+---
+common-css:
+  - "/assets/css/connect-the-dots.css"
+common-ext-css:
+  - "https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800&display=swap"
+common-js:
+  - "/assets/js/connect-the-dots.js"
+---
+
+<!DOCTYPE html>
+<html lang="{{ page.language | default: site.language | default: 'en' }}">
+{% include head.html %}
+<body class="ctd-body">
+  {% include gtm_body.html %}
+  {{ content }}
+  {% include footer-scripts.html %}
+</body>
+</html>

@@ -7,6 +7,8 @@
   --ez-mateus-deep: #1f7a6e;
   --ez-counting: #0077b6;
   --ez-counting-deep: #023e8a;
+  --ez-dots: #9b5de5;
+  --ez-dots-deep: #6a3ea1;
   --ez-joanna: #e76f51;
   --ez-joanna-deep: #c65338;
   --ez-font: "Fredoka", "Nunito", sans-serif;
@@ -126,6 +128,15 @@ body.ez-body {
 
 .ez-btn-counting:active {
   box-shadow: 0 4px 0 var(--ez-counting-deep);
+}
+
+.ez-btn-dots {
+  background: var(--ez-dots);
+  box-shadow: 0 10px 0 var(--ez-dots-deep);
+}
+
+.ez-btn-dots:active {
+  box-shadow: 0 4px 0 var(--ez-dots-deep);
 }
 
 .ez-btn-joanna {

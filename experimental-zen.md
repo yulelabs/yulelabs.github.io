@@ -21,6 +21,12 @@ subtitle: Choose Mateus or Joanna
         <span class="ez-btn-main">Counting</span>
       </span>
     </a>
+    <a class="ez-btn ez-btn-dots" href="{{ '/connect-the-dots' | relative_url }}">
+      <span class="ez-btn-stack">
+        <span class="ez-btn-sub">Mateus</span>
+        <span class="ez-btn-main">ABC Dots</span>
+      </span>
+    </a>
     <a class="ez-btn ez-btn-joanna" href="{{ '/learn-grammar-pt' | relative_url }}">
       <span class="ez-btn-stack">
         <span class="ez-btn-sub">Joanna</span>
