@@ -22,7 +22,7 @@
     { id: "orange", emoji: "🍊", category: "fruit", en: "orange", pt: "laranja", pl: "pomarańcza", letter: { en: "O", pt: "L", pl: "P" } },
     { id: "grape", emoji: "🍇", category: "fruit", en: "grape", pt: "uva", pl: "winogrono", letter: { en: "G", pt: "U", pl: "W" } },
     { id: "strawberry", emoji: "🍓", category: "fruit", en: "strawberry", pt: "morango", pl: "truskawka", letter: { en: "S", pt: "M", pl: "T" } },
-    { id: "pineapple", emoji: "🍍", category: "fruit", en: "pineapple", pt: "abacaxi", pl: "ananas", letter: { en: "P", pt: "A", pl: "A" } },
+    { id: "pineapple", emoji: "🍍", category: "fruit", en: "pineapple", pt: "ananás", pl: "ananas", letter: { en: "P", pt: "A", pl: "A" } },
     { id: "watermelon", emoji: "🍉", category: "fruit", en: "watermelon", pt: "melancia", pl: "arbuz", letter: { en: "W", pt: "M", pl: "A" } },
     { id: "pear", emoji: "🍐", category: "fruit", en: "pear", pt: "pêra", pl: "gruszka", letter: { en: "P", pt: "P", pl: "G" } },
     { id: "cherry", emoji: "🍒", category: "fruit", en: "cherry", pt: "cereja", pl: "wiśnia", letter: { en: "C", pt: "C", pl: "W" } },
@@ -31,10 +31,10 @@
     { id: "tomato", emoji: "🍅", category: "vegetable", en: "tomato", pt: "tomate", pl: "pomidor", letter: { en: "T", pt: "T", pl: "P" } },
     { id: "potato", emoji: "🥔", category: "vegetable", en: "potato", pt: "batata", pl: "ziemniak", letter: { en: "P", pt: "B", pl: "Z" } },
     { id: "corn", emoji: "🌽", category: "vegetable", en: "corn", pt: "milho", pl: "kukurydza", letter: { en: "C", pt: "M", pl: "K" } },
-    { id: "broccoli", emoji: "🥦", category: "vegetable", en: "broccoli", pt: "brócolis", pl: "brokuł", letter: { en: "B", pt: "B", pl: "B" } },
-    { id: "pepper", emoji: "🌶️", category: "vegetable", en: "pepper", pt: "pimentão", pl: "papryka", letter: { en: "P", pt: "P", pl: "P" } },
+    { id: "broccoli", emoji: "🥦", category: "vegetable", en: "broccoli", pt: "brócolos", pl: "brokuł", letter: { en: "B", pt: "B", pl: "B" } },
+    { id: "pepper", emoji: "🌶️", category: "vegetable", en: "pepper", pt: "pimento", pl: "papryka", letter: { en: "P", pt: "P", pl: "P" } },
     { id: "cucumber", emoji: "🥒", category: "vegetable", en: "cucumber", pt: "pepino", pl: "ogórek", letter: { en: "C", pt: "P", pl: "O" } },
-    { id: "eggplant", emoji: "🍆", category: "vegetable", en: "eggplant", pt: "berinjela", pl: "bakłażan", letter: { en: "E", pt: "B", pl: "B" } }
+    { id: "eggplant", emoji: "🍆", category: "vegetable", en: "eggplant", pt: "beringela", pl: "bakłażan", letter: { en: "E", pt: "B", pl: "B" } }
   ];
 
   var NUMBERS = [

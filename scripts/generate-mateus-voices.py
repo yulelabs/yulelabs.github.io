@@ -14,7 +14,7 @@ OUT = ROOT / "assets" / "audio" / "mateus"
 
 VOICES = {
     "en": "en-US-AriaNeural",
-    "pt": "pt-BR-FranciscaNeural",
+    "pt": "pt-PT-RaquelNeural",
     "pl": "pl-PL-ZofiaNeural",
 }
 
@@ -36,7 +36,7 @@ ITEMS = [
     ("orange", {"en": "orange", "pt": "laranja", "pl": "pomarańcza"}),
     ("grape", {"en": "grape", "pt": "uva", "pl": "winogrono"}),
     ("strawberry", {"en": "strawberry", "pt": "morango", "pl": "truskawka"}),
-    ("pineapple", {"en": "pineapple", "pt": "abacaxi", "pl": "ananas"}),
+    ("pineapple", {"en": "pineapple", "pt": "ananás", "pl": "ananas"}),
     ("watermelon", {"en": "watermelon", "pt": "melancia", "pl": "arbuz"}),
     ("pear", {"en": "pear", "pt": "pêra", "pl": "gruszka"}),
     ("cherry", {"en": "cherry", "pt": "cereja", "pl": "wiśnia"}),
@@ -45,10 +45,10 @@ ITEMS = [
     ("tomato", {"en": "tomato", "pt": "tomate", "pl": "pomidor"}),
     ("potato", {"en": "potato", "pt": "batata", "pl": "ziemniak"}),
     ("corn", {"en": "corn", "pt": "milho", "pl": "kukurydza"}),
-    ("broccoli", {"en": "broccoli", "pt": "brócolis", "pl": "brokuł"}),
-    ("pepper", {"en": "pepper", "pt": "pimentão", "pl": "papryka"}),
+    ("broccoli", {"en": "broccoli", "pt": "brócolos", "pl": "brokuł"}),
+    ("pepper", {"en": "pepper", "pt": "pimento", "pl": "papryka"}),
     ("cucumber", {"en": "cucumber", "pt": "pepino", "pl": "ogórek"}),
-    ("eggplant", {"en": "eggplant", "pt": "berinjela", "pl": "bakłażan"}),
+    ("eggplant", {"en": "eggplant", "pt": "beringela", "pl": "bakłażan"}),
 ]
 
 NUMBERS = [
@@ -90,9 +90,9 @@ def slug(text: str) -> str:
     return text or "clip"
 
 
-async def save_clip(text: str, voice: str, path: Path, sem: asyncio.Semaphore) -> None:
+async def save_clip(text: str, voice: str, path: Path, sem: asyncio.Semaphore, force: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    if path.exists() and path.stat().st_size > 500:
+    if not force and path.exists() and path.stat().st_size > 500:
         return
     async with sem:
         communicate = edge_tts.Communicate(text, voice, rate="-5%")
@@ -101,22 +101,33 @@ async def save_clip(text: str, voice: str, path: Path, sem: asyncio.Semaphore) -
 
 
 async def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--lang", choices=["en", "pt", "pl"], help="Only regenerate one language")
+    parser.add_argument("--force", action="store_true", help="Overwrite existing clips")
+    args = parser.parse_args()
+
+    langs = [args.lang] if args.lang else list(VOICES.keys())
+    force = args.force or bool(args.lang)
+
     sem = asyncio.Semaphore(4)
     tasks = []
 
-    for lang, voice in VOICES.items():
-        tasks.append(save_clip(HELLO[lang], voice, OUT / lang / "hello.mp3", sem))
+    for lang in langs:
+        voice = VOICES[lang]
+        tasks.append(save_clip(HELLO[lang], voice, OUT / lang / "hello.mp3", sem, force))
 
         for item_id, words in ITEMS:
-            tasks.append(save_clip(words[lang], voice, OUT / lang / f"item-{item_id}.mp3", sem))
+            tasks.append(save_clip(words[lang], voice, OUT / lang / f"item-{item_id}.mp3", sem, force))
 
         for n, words in NUMBERS:
-            tasks.append(save_clip(words[lang], voice, OUT / lang / f"number-{n}.mp3", sem))
+            tasks.append(save_clip(words[lang], voice, OUT / lang / f"number-{n}.mp3", sem, force))
 
         for letter in LETTERS[lang]:
             spoken = f"{LETTER_PREFIX[lang]} {letter}"
             key = f"letter-{slug(letter)}"
-            tasks.append(save_clip(spoken, voice, OUT / lang / f"{key}.mp3", sem))
+            tasks.append(save_clip(spoken, voice, OUT / lang / f"{key}.mp3", sem, force))
 
     await asyncio.gather(*tasks)
     print(f"done: {len(tasks)} clips")
