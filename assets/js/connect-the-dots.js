@@ -78,14 +78,15 @@
   };
 
   // Point paths in 0..100 board coordinates (letter assigned at runtime).
+  // Every point must be unique and well spaced so letter circles never stack.
   var PUZZLES = [
     {
       id: "fish",
       emoji: "🐟",
       name: { en: "Fish", pt: "Peixe", pl: "Ryba" },
       points: [
-        [18, 48], [28, 34], [42, 28], [58, 30], [72, 40], [82, 52],
-        [72, 62], [58, 70], [42, 72], [28, 64], [18, 52], [30, 48], [42, 50]
+        [14, 50], [28, 32], [48, 22], [68, 28], [84, 46],
+        [78, 64], [60, 78], [40, 80], [22, 68], [18, 52]
       ]
     },
     {
@@ -93,9 +94,8 @@
       emoji: "🐶",
       name: { en: "Dog", pt: "Cão", pl: "Pies" },
       points: [
-        [30, 28], [42, 22], [55, 24], [66, 32], [72, 45], [70, 58],
-        [60, 68], [46, 72], [34, 68], [26, 56], [24, 42], [28, 34],
-        [38, 40], [50, 42], [58, 50]
+        [22, 30], [40, 16], [60, 18], [78, 32], [84, 52],
+        [76, 72], [56, 84], [34, 82], [16, 66], [14, 46], [28, 36]
       ]
     },
     {
@@ -103,8 +103,8 @@
       emoji: "⭐",
       name: { en: "Star", pt: "Estrela", pl: "Gwiazda" },
       points: [
-        [50, 12], [58, 36], [84, 36], [64, 52], [72, 78],
-        [50, 62], [28, 78], [36, 52], [16, 36], [42, 36], [50, 12]
+        [50, 12], [60, 34], [84, 36], [66, 52], [74, 78],
+        [50, 64], [26, 78], [34, 52], [16, 36], [40, 34]
       ]
     },
     {
@@ -112,8 +112,8 @@
       emoji: "🏠",
       name: { en: "House", pt: "Casa", pl: "Dom" },
       points: [
-        [20, 55], [20, 78], [80, 78], [80, 55], [50, 22],
-        [20, 55], [35, 55], [35, 40], [50, 28], [65, 40], [65, 55]
+        [18, 52], [18, 82], [82, 82], [82, 52], [50, 16],
+        [34, 40], [50, 30], [66, 40]
       ]
     },
     {
@@ -121,8 +121,8 @@
       emoji: "🚀",
       name: { en: "Rocket", pt: "Foguete", pl: "Rakieta" },
       points: [
-        [50, 12], [62, 28], [62, 55], [74, 72], [62, 68],
-        [50, 82], [38, 68], [26, 72], [38, 55], [38, 28], [50, 12]
+        [50, 12], [66, 28], [66, 52], [80, 74], [64, 70],
+        [50, 86], [36, 70], [20, 74], [34, 52], [34, 28]
       ]
     },
     {
@@ -130,8 +130,8 @@
       emoji: "🐱",
       name: { en: "Cat", pt: "Gato", pl: "Kot" },
       points: [
-        [28, 30], [36, 18], [44, 30], [56, 30], [64, 18], [72, 30],
-        [78, 45], [72, 62], [58, 72], [42, 72], [28, 62], [22, 45], [28, 30]
+        [24, 34], [34, 14], [46, 30], [54, 30], [66, 14], [76, 34],
+        [84, 52], [74, 72], [56, 84], [38, 84], [22, 70], [14, 50]
       ]
     },
     {
@@ -139,8 +139,8 @@
       emoji: "🍎",
       name: { en: "Apple", pt: "Maçã", pl: "Jabłko" },
       points: [
-        [50, 22], [62, 18], [55, 28], [70, 38], [74, 55], [66, 72],
-        [50, 80], [34, 72], [26, 55], [30, 38], [45, 28], [50, 22]
+        [50, 18], [66, 14], [58, 28], [78, 40], [84, 60], [70, 80],
+        [50, 88], [30, 80], [16, 60], [22, 40], [42, 28]
       ]
     },
     {
@@ -148,11 +148,13 @@
       emoji: "⛵",
       name: { en: "Boat", pt: "Barco", pl: "Łódka" },
       points: [
-        [50, 18], [50, 55], [78, 55], [68, 72], [32, 72], [22, 55],
-        [50, 55], [50, 18], [62, 40], [50, 40]
+        [50, 12], [50, 42], [82, 52], [70, 78], [30, 78], [18, 52],
+        [66, 36], [50, 30]
       ]
     }
   ];
+
+  var MIN_DOT_GAP = 14;
 
   var state = {
     lang: null,
@@ -182,23 +184,66 @@
     return PUZZLES[state.puzzleIndex % PUZZLES.length];
   }
 
+  function clampBoard(v) {
+    return Math.min(90, Math.max(10, v));
+  }
+
+  function separateDots(dots) {
+    var i;
+    var j;
+    var iter;
+    for (iter = 0; iter < 40; iter++) {
+      var moved = false;
+      for (i = 0; i < dots.length; i++) {
+        for (j = i + 1; j < dots.length; j++) {
+          var dx = dots[j].x - dots[i].x;
+          var dy = dots[j].y - dots[i].y;
+          var dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+          if (dist < MIN_DOT_GAP) {
+            var push = (MIN_DOT_GAP - dist) / 2;
+            var ux = dx / dist;
+            var uy = dy / dist;
+            dots[i].x = clampBoard(dots[i].x - ux * push);
+            dots[i].y = clampBoard(dots[i].y - uy * push);
+            dots[j].x = clampBoard(dots[j].x + ux * push);
+            dots[j].y = clampBoard(dots[j].y + uy * push);
+            moved = true;
+          }
+        }
+      }
+      if (!moved) break;
+    }
+    return dots;
+  }
+
   function puzzleDots() {
     var puzzle = currentPuzzle();
     var letters = alphabet();
     var count = Math.min(puzzle.points.length, letters.length);
     var dots = [];
-    for (var i = 0; i < count; i++) {
-      // Keep dots inside the board so labels (including A) are never clipped.
-      var x = Math.min(92, Math.max(8, puzzle.points[i][0]));
-      var y = Math.min(92, Math.max(8, puzzle.points[i][1]));
+    var seen = {};
+    var i;
+    for (i = 0; i < count; i++) {
+      var x = clampBoard(puzzle.points[i][0]);
+      var y = clampBoard(puzzle.points[i][1]);
+      var key = Math.round(x) + ":" + Math.round(y);
+      // Skip exact duplicates that would stack letters on one circle.
+      if (seen[key]) {
+        x = clampBoard(x + 12);
+        y = clampBoard(y + 8);
+        key = Math.round(x) + ":" + Math.round(y);
+      }
+      seen[key] = true;
       dots.push({
         letter: letters[i],
         x: x,
         y: y,
-        index: i
+        index: dots.length
       });
     }
-    return dots;
+    // Re-index after possible skips (we didn't skip, just nudged).
+    for (i = 0; i < dots.length; i++) dots[i].index = i;
+    return separateDots(dots);
   }
 
   function pickOne(arr) {

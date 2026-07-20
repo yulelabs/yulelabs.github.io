@@ -230,17 +230,17 @@ body.ctd-body {
 
 .ctd-dot {
   position: absolute;
-  width: 2.55rem;
-  height: 2.55rem;
-  margin-left: -1.275rem;
-  margin-top: -1.275rem;
+  width: 2.35rem;
+  height: 2.35rem;
+  margin-left: -1.175rem;
+  margin-top: -1.175rem;
   border: 3px solid var(--ctd-dot);
   border-radius: 50%;
   background: #fff;
   color: var(--ctd-ink);
   font-family: var(--ctd-font);
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   line-height: 1;
   display: flex;
   align-items: center;
