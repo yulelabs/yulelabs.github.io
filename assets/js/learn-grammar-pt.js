@@ -347,9 +347,11 @@
         '<div class="lgp-search" id="lgp-modules">' +
           '<input type="search" placeholder="' + esc(ui.search) + '" value="' + esc(state.search) + '" data-action="search" />' +
         "</div>" +
-        (cards
-          ? '<div class="lgp-grid">' + cards + "</div>"
-          : '<div class="lgp-empty">' + esc(ui.noResults) + "</div>") +
+        '<div data-modules-host>' +
+          (cards
+            ? '<div class="lgp-grid">' + cards + "</div>"
+            : '<div class="lgp-empty">' + esc(ui.noResults) + "</div>") +
+        "</div>" +
         '<p class="lgp-footer-note">' + esc(ui.footer) + "</p>" +
       "</div>"
     );
@@ -708,17 +710,33 @@
     }
   }
 
+  function updateHomeGrid() {
+    var ui = t();
+    var gridHost = root.querySelector("[data-modules-host]");
+    if (!gridHost) return;
+    var cards = filteredModules().map(function (m, idx) {
+      var done = !!state.completed[m.id];
+      return (
+        '<button type="button" class="lgp-module-card' + (done ? " is-done" : "") + '" data-action="open-module" data-id="' + esc(m.id) + '" style="animation-delay:' + (idx * 0.03) + 's">' +
+          '<div class="lgp-mod-top">' +
+            '<span class="lgp-mod-icon" aria-hidden="true">' + esc(m.icon || "📘") + "</span>" +
+            '<span class="lgp-mod-order">#' + esc(String(m.order || "")) + (done ? ' · <span class="lgp-badge">' + esc(ui.done) + "</span>" : "") + "</span>" +
+          "</div>" +
+          "<h3>" + esc(tr(m.title)) + "</h3>" +
+          "<p>" + esc(tr(m.summary)) + "</p>" +
+        "</button>"
+      );
+    }).join("");
+    gridHost.innerHTML = cards
+      ? '<div class="lgp-grid">' + cards + "</div>"
+      : '<div class="lgp-empty">' + esc(ui.noResults) + "</div>";
+  }
+
   function onInput(e) {
     var el = e.target;
     if (el && el.getAttribute("data-action") === "search") {
       state.search = el.value || "";
-      render();
-      var input = root.querySelector('[data-action="search"]');
-      if (input) {
-        input.focus();
-        var val = input.value;
-        input.setSelectionRange(val.length, val.length);
-      }
+      updateHomeGrid();
     }
   }
 
