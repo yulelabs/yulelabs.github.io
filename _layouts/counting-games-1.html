@@ -1,0 +1,18 @@
+---
+common-css:
+  - "/assets/css/counting-games-1.css"
+common-ext-css:
+  - "https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800&display=swap"
+common-js:
+  - "/assets/js/counting-games-1.js"
+---
+
+<!DOCTYPE html>
+<html lang="{{ page.language | default: site.language | default: 'en' }}">
+{% include head.html %}
+<body class="cg-body">
+  {% include gtm_body.html %}
+  {{ content }}
+  {% include footer-scripts.html %}
+</body>
+</html>

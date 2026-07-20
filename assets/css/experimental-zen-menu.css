@@ -5,6 +5,8 @@
   --ez-ink: #1d3557;
   --ez-mateus: #2a9d8f;
   --ez-mateus-deep: #1f7a6e;
+  --ez-counting: #0077b6;
+  --ez-counting-deep: #023e8a;
   --ez-joanna: #e76f51;
   --ez-joanna-deep: #c65338;
   --ez-font: "Fredoka", "Nunito", sans-serif;
@@ -76,6 +78,25 @@ body.ez-body {
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
+.ez-btn-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.ez-btn-sub {
+  font-size: 0.45em;
+  font-weight: 600;
+  opacity: 0.9;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ez-btn-main {
+  font-size: 1em;
+}
+
 .ez-btn:hover {
   transform: translateY(-3px);
   color: #fff;
@@ -98,6 +119,15 @@ body.ez-body {
   box-shadow: 0 4px 0 var(--ez-mateus-deep);
 }
 
+.ez-btn-counting {
+  background: var(--ez-counting);
+  box-shadow: 0 10px 0 var(--ez-counting-deep);
+}
+
+.ez-btn-counting:active {
+  box-shadow: 0 4px 0 var(--ez-counting-deep);
+}
+
 .ez-btn-joanna {
   background: var(--ez-joanna);
   box-shadow: 0 10px 0 var(--ez-joanna-deep);
@@ -110,11 +140,13 @@ body.ez-body {
 @media (min-width: 720px) {
   .ez-actions {
     flex-direction: row;
-    width: min(100%, 42rem);
+    flex-wrap: wrap;
+    justify-content: center;
+    width: min(100%, 54rem);
   }
 
   .ez-btn {
-    flex: 1;
+    flex: 1 1 14rem;
     min-height: 8rem;
   }
 }
