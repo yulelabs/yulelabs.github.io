@@ -1,0 +1,16 @@
+---
+common-css:
+  - "/assets/css/experimental-zen-menu.css"
+common-ext-css:
+  - "https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap"
+---
+
+<!DOCTYPE html>
+<html lang="{{ page.language | default: site.language | default: 'en' }}">
+{% include head.html %}
+<body class="ez-body">
+  {% include gtm_body.html %}
+  {{ content }}
+  {% include footer-scripts.html %}
+</body>
+</html>

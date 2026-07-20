@@ -1,0 +1,120 @@
+/* Experimental zen chooser — simple fullscreen menu */
+:root {
+  --ez-sky: #8ecae6;
+  --ez-mint: #b7efc5;
+  --ez-ink: #1d3557;
+  --ez-mateus: #2a9d8f;
+  --ez-mateus-deep: #1f7a6e;
+  --ez-joanna: #e76f51;
+  --ez-joanna-deep: #c65338;
+  --ez-font: "Fredoka", "Nunito", sans-serif;
+}
+
+html,
+body.ez-body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+body.ez-body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--ez-sky) 0%, #caf0f8 45%, var(--ez-mint) 100%) fixed;
+  font-family: var(--ez-font);
+  color: var(--ez-ink);
+  overflow-x: hidden;
+}
+
+.ez-menu {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.ez-kicker {
+  margin: 0;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.ez-title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.ez-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: min(100%, 28rem);
+}
+
+.ez-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 5.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1.4rem;
+  font-family: var(--ez-font);
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 700;
+  text-decoration: none;
+  color: #fff;
+  box-shadow: 0 10px 0 rgba(29, 53, 87, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.ez-btn:hover {
+  transform: translateY(-3px);
+  color: #fff;
+  text-decoration: none;
+}
+
+.ez-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 rgba(29, 53, 87, 0.18);
+  color: #fff;
+  text-decoration: none;
+}
+
+.ez-btn-mateus {
+  background: var(--ez-mateus);
+  box-shadow: 0 10px 0 var(--ez-mateus-deep);
+}
+
+.ez-btn-mateus:active {
+  box-shadow: 0 4px 0 var(--ez-mateus-deep);
+}
+
+.ez-btn-joanna {
+  background: var(--ez-joanna);
+  box-shadow: 0 10px 0 var(--ez-joanna-deep);
+}
+
+.ez-btn-joanna:active {
+  box-shadow: 0 4px 0 var(--ez-joanna-deep);
+}
+
+@media (min-width: 720px) {
+  .ez-actions {
+    flex-direction: row;
+    width: min(100%, 42rem);
+  }
+
+  .ez-btn {
+    flex: 1;
+    min-height: 8rem;
+  }
+}
